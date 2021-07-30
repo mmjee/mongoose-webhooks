@@ -4,13 +4,13 @@ Mongoose Webhooks
 [![npm version](https://badge.fury.io/js/mongoose-webhooks.svg)](https://badge.fury.io/js/mongoose-webhooks)
 [![Build Status](https://travis-ci.org/amalfra/mongoose-webhooks.svg?branch=master)](https://travis-ci.org/amalfra/mongoose-webhooks)
 
-Sends webhook on mongoose model events.
+Sends webhook on mongoose model events. Fork of [amalfra/mongoose-webhooks](https://github.com/amalfra/mongoose-webhooks) to implement per-document URLs.
 
 ## Installation
 In your project root, run the following:
 
 ```sh
-npm install mongoose-webhooks
+npm install git+https://github.com/mmjee/mongoose-webhooks.git
 ```
 
 ## Usage
@@ -23,23 +23,27 @@ const mongooseWebhooks = require('mongoose-webhooks');
 The following schema definition defines a "User" schema, and uses mongoose-webhooks plugin
 
 ```javascript
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const mongooseWebhooks = require('mongoose-webhooks')
+
+const Schema = mongoose.Schema
 // Require the plugin
-const mongooseWebhooks = require('mongoose-webhooks');
 
 const User = new Schema({
   username : { type : String, required : true},
   password : { type : String, required : true },
   email : { type : String, required : true},
   lastModified : Date,
-  created : Date
-});
+  created : Date,
+  webhookUrl: { type: String, required: true }
+})
 
-// Apply the plugin to schema. Note that the urls option is required.
-User.plugin(mongooseWebhooks, {'urls': 'http://site.com/mongoose-webhook'});
-// urls options also supports multiple values. You can pass array of values if webhook needs to be delivered to multiple destinations
-User.plugin(mongooseWebhooks, {'urls': ['http://site1.com/mongoose-webhook', 'http://site2.com/mongoose-webhook']});
+// The plugin will make a request to the URL returned by the url function
+User.plugin(mongooseWebhooks, {
+  url (doc) {
+    return doc.webhookUrl
+  }
+})
 ```
 
 Now you will be getting a webhook POST request to configured url. The webhook payload will be
@@ -67,12 +71,11 @@ The data key will have the JSON seralized document from mongoose.
 ## Options
 
 The two options supported by plugin are
-  * **urls** : You can specify the URL(s) to send webhook with this option. This accepts multiple values as arrays too. *This is a required option*
   * **useragent** : Lets you specify the `User-Agent` header for the webhook request. This is optional.
 
 ## Development
 
-Questions, problems or suggestions? Please post them on the [issue tracker](https://github.com/amalfra/mongoose-webhooks/issues).
+Questions, problems or suggestions? Please post them on the [issue tracker](https://github.com/mmjee/mongoose-webhooks/issues).
 
 You can contribute changes by forking the project and submitting a pull request. Feel free to contribute :heart_eyes:
 
