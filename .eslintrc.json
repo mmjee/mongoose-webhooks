@@ -1,9 +1,3 @@
 {
-  "parserOptions": {
-    "ecmaVersion": 6
-  },
-  "extends": "strongloop",
-  "rules": {
-    "max-len": [2, 120]
-  }
+  "extends": "standard"
 }
